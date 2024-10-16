@@ -23,7 +23,7 @@ def kriging(file_path, save_path):
     gridy = np.linspace(lats.min(), lats.max(), 100)
 
     # Kriging
-    OK = OrdinaryKriging(lons, lats, values, variogram_model="hole-effect")
+    OK = OrdinaryKriging(lons, lats, values, variogram_model="power")
     z, ss = OK.execute("grid", gridx, gridy)
 
     # Resolution adjust
@@ -134,14 +134,14 @@ def IDW(file_path, save_path):
 
 
 root = "./collect_points/days/"
+points = [f"{root}{point}" for point in os.listdir(root)]
+for point_path in points:
+    if int(point_path.split("/")[-1].split("_")[0]) > 10:
+        kriging(point_path, "./kriging_result")
+
+
+# root = "./collect_points/days/"
 # points = [f"{root}{point}" for point in os.listdir(root)]
 # for point_path in points:
 #     if int(point_path.split("/")[-1].split("_")[0]) > 1:
-#         kriging(point_path, "./kriging_result")
-
-
-root = "./collect_points/days/"
-points = [f"{root}{point}" for point in os.listdir(root)]
-for point_path in points:
-    if int(point_path.split("/")[-1].split("_")[0]) > 1:
-        IDW(point_path, "./idw_result")
+#         IDW(point_path, "./idw_result")
