@@ -133,11 +133,11 @@ def IDW(file_path, save_path):
         dst.write(grid1, 1)
 
 
-root = "./collect_points/days/"
+root = "./collect_points/months-years/"
 points = [f"{root}{point}" for point in os.listdir(root)]
 for point_path in points:
-    if int(point_path.split("/")[-1].split("_")[0]) > 10:
-        kriging(point_path, "./kriging_result")
+    # if int(point_path.split("/")[-1].split("_")[0]) > 10:
+    kriging(point_path, "./kriging_result_months")
 
 
 # root = "./collect_points/days/"
