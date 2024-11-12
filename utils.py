@@ -307,7 +307,7 @@ def IDW(file_path, save_path):
         dst.write(grid1, 1)
 
 
-# if __name__ == "__main__":
-#     path_to_bands = "/media/weverton/D/Remote Sensing/Water Quality/mobile_bay/scenes/2006-06-06/crop/"
-#     df = img2df_separate_bands(path_bands=path_to_bands, export_path="2006-06-06.csv")
-#     print(df.head)
+if __name__ == "__main__":
+    path_to_bands = "/media/weverton/D/Remote Sensing/Water Quality/mobile_bay/scenes/2006-06-06/crop/"
+    df = img2df_separate_bands(path_bands=path_to_bands, export_path="2006-06-06.csv")
+    print(df.head)
