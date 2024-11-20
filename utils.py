@@ -182,15 +182,22 @@ def crop_tif_based_on_another(tif_to_crop, reference_tif, output_tif):
                 dst_tif.write(cropped_data)
 
 
-def kriging(file_path, save_path):
+def interpolate_kriging(
+    file_path: str,
+    save_path: str,
+    lat_field: str = "Latitude",
+    lon_field: str = "Longitude",
+    target_field: str = "ChlA",
+):
     # Create save folder
     os.makedirs(save_path, exist_ok=True)
 
     # Load data
     data = pd.read_csv(file_path)
-    lats = data["Latitude"]
-    lons = data["Longitude"]
-    values = data["ChlA"]
+
+    lats = data[lat_field]
+    lons = data[lon_field]
+    values = data[target_field]
 
     # interpolation grade
     gridx = np.linspace(lons.min(), lons.max(), 100)
@@ -202,6 +209,7 @@ def kriging(file_path, save_path):
 
     # Resolution adjust
     resolution = (gridx[1] - gridx[0], gridy[1] - gridy[0])
+    print(resolution)
     transform = from_origin(gridx.min(), gridy.max(), *resolution)
 
     # Criar o arquivo .tif
@@ -219,7 +227,13 @@ def kriging(file_path, save_path):
         dst.write(z, 1)
 
 
-def IDW(file_path, save_path):
+def interpolate_IDW(
+    file_path: str,
+    save_path: str,
+    lat_field: str = "Latitude",
+    lon_field: str = "Longitude",
+    target_field: str = "ChlA",
+):
     def distance_matrix(x0, y0, x1, y1):
         """Make a distance matrix between pairwise observations.
         Note: from <http://stackoverflow.com/questions/1871536>
@@ -270,9 +284,9 @@ def IDW(file_path, save_path):
 
     # Carregar os dados CSV
     data = pd.read_csv(file_path)
-    lats = data["Latitude"].values
-    lons = data["Longitude"].values
-    values = data["ChlA"].values
+    lats = data[lat_field].values
+    lons = data[lon_field].values
+    values = data[target_field].values
 
     # Criar grade de interpolação
     xi = np.linspace(lons.min(), lons.max(), 100)
@@ -290,8 +304,9 @@ def IDW(file_path, save_path):
     # Reformar para uma grade 2D
     grid1 = grid1.reshape(xi.shape)  # Aqui o xi.shape traz as dimensões corretas
 
-    # resolution = (xi[1] - xi[0], yi[1] - yi[0])
-    # transform = from_origin(xi.min(), yi.max(), *resolution)
+    resolution = (xi[0, 1] - xi[0, 0], yi[1, 0] - yi[0, 0])
+
+    transform = from_origin(xi.min(), yi.max(), *resolution)
     # Criar o arquivo .tif
     with rasterio.open(
         f"{save_path}/{file_path.split('/')[-1].replace('.csv', '')}.tif",
@@ -302,7 +317,7 @@ def IDW(file_path, save_path):
         count=1,
         dtype=grid1.dtype,
         crs="EPSG:4326",
-        # transform=transform,
+        transform=transform,
     ) as dst:
         dst.write(grid1, 1)
 
