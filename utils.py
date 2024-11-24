@@ -209,7 +209,6 @@ def interpolate_kriging(
 
     # Resolution adjust
     resolution = (gridx[1] - gridx[0], gridy[1] - gridy[0])
-    print(resolution)
     transform = from_origin(gridx.min(), gridy.max(), *resolution)
 
     # Criar o arquivo .tif
